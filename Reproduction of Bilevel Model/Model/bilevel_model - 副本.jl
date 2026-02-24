@@ -202,7 +202,7 @@ function build_bilevel_bess_model(data; verbose=true, time_limit=3600)
                     set_optimizer_attribute(model, "TuneResults", 1) # Tuning of solver parameters
     
                 # Big-M 
-                M =1^6  # set a sufficiently large value for Big-M
+                M =10^6  # set a sufficiently large value for Big-M
                 M_dual = 10000.0  # Big-M for dual variables
                 alpha = 0.1       # energy left in BESS at the end of horizon (10% of initial energy)
                 # ========================================
@@ -405,48 +405,47 @@ function build_bilevel_bess_model(data; verbose=true, time_limit=3600)
     # println("  约束数: $(num_constraints(model, count_variable_in_set_constraints=true))")
     # println("=" ^ 60 * "\n")
     
-    return model
-end
+#     return model
+# end
 
-"""
-    solve_model(model; verbose=true)
+# """
+#     solve_model(model; verbose=true)
 
-求解优化模型并返回结果
-"""
-function solve_model(model; verbose=true)
-    println("\n" * "⏰" ^ 30)
-    println("🚀 开始求解模型...")
-    println("⏰" ^ 30 * "\n")
+# 求解优化模型并返回结果
+# """
+# function solve_model(model; verbose=true)
+#     println("\n" * "⏰" ^ 30)
+#     println("🚀 开始求解模型...")
+#     println("⏰" ^ 30 * "\n")
     
-    start_time = time()
-    optimize!(model)
-    solve_time = time() - start_time
+#     start_time = time()
+#     optimize!(model)
+#     solve_time = time() - start_time
     
-    status = termination_status(model)
+#     status = termination_status(model)
     
-    println("\n" * "=" ^ 60)
-    println("📊 求解状态")
-    println("=" ^ 60)
-    println("状态: $status")
-    @printf("求解时间: %.2f 秒\n", solve_time)
+#     println("\n" * "=" ^ 60)
+#     println("📊 求解状态")
+#     println("=" ^ 60)
+#     println("状态: $status")
+#     @printf("求解时间: %.2f 秒\n", solve_time)
     
-    if has_values(model)
-        obj_value = objective_value(model)
-        @printf("目标值 (储能利润): \$%.2f\n", obj_value)
+#     if has_values(model)
+#         obj_value = objective_value(model)
+#         @printf("目标值 (储能利润): \$%.2f\n", obj_value)
         
-        if verbose
-            gap = relative_gap(model)
-            @printf("相对Gap: %.4f%%\n", gap * 100)
-        end
+#         if verbose
+#             gap = relative_gap(model)
+#             @printf("相对Gap: %.4f%%\n", gap * 100)
+#         end
         
-        println("=" ^ 60 * "\n")
-        return true
-    else
-        println("⚠️  模型未找到可行解")
-        println("=" ^ 60 * "\n")
-        return false
-    end
-end
+#         println("=" ^ 60 * "\n")
+#         return true
+#     else
+#         println("⚠️  模型未找到可行解")
+#         println("=" ^ 60 * "\n")
+#         return false
+#     end
+# end
 
-export build_bilevel_bess_model, solve_model
-
+# export build_bilevel_bess_model, solve_model
