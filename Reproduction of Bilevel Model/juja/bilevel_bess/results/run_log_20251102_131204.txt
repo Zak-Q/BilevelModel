@@ -1,0 +1,106 @@
+
+================================================================================
+                    储能系统双层优化模型求解系统
+               Bilevel Energy Storage Market Optimization
+================================================================================
+
+📅 运行时间: 2025-11-02 13:10:30
+🖥️  Julia 版本: 1.12.1
+
+
+【步骤 1/6】 数据加载
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 开始加载数据...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ 发电机数据: 5 台发电机
+✓ 负荷数据: 3 个负荷节点
+✓ 储能数据: 1 个储能系统
+✓ 场景数据: 24 个时段, 3 个场景
+✓ 市场需求数据: 24 个时段
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 数据加载完成
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【步骤 2/6】 数据验证
+
+🔍 验证数据...
+✅ 数据验证通过
+
+
+============================================================
+📊 数据摘要
+============================================================
+
+【时间维度】
+  时段数: 24
+  场景数: 3
+
+【发电侧】
+  发电机数量: 5
+  总装机容量: 500 MW
+  平均报价: 26.20 $/MWh
+
+【负荷侧】
+  负荷节点数: 3
+  总负荷(t=1): 390.00 MW
+  峰值负荷: 270.00 MW
+  谷值负荷: 80.00 MW
+
+【储能系统】
+  储能ID: BESS1
+  充电功率: 50.00 MW
+  放电功率: 50.00 MW
+  能量容量: 200.00 MWh
+  初始能量: 100.00 MWh
+  充电效率: 95.00%
+  放电效率: 95.00%
+
+【备用需求】
+  平均上备用: 43.12 MW
+  平均下备用: 34.00 MW
+
+============================================================
+
+【步骤 3/6】 模型构建与求解
+
+============================================================
+🔨 开始构建双层优化模型
+============================================================
+✓ 提取参数完成
+  时段数: 24, 场景数: 3
+  发电机: 5, 负荷: 3
+
+❌ 程序执行出错:
+ErrorException("Gurobi Error 10009: No Gurobi license found (user songyuheng, host songyuhengdeMacBook-Pro.local, hostid 573a3098, cores 14)")
+
+Stacktrace:
+  [1] [0m[1m_check_ret[22m
+[90m    @[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:442[24m[39m[90m [inlined][39m
+  [2] [0m[1mGurobi.Env[22m[0m[1m([22m[90mparams[39m::[0mNothing; [90mstarted[39m::[0mBool, [90moutput_flag[39m::[0mInt64, [90mmemory_limit[39m::[0mNothing[0m[1m)[22m
+[90m    @[39m [35mGurobi[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:176[24m[39m
+  [3] [0m[1mEnv[22m[33m[1m (repeats 2 times)[22m[39m
+[90m    @[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:143[24m[39m[90m [inlined][39m
+  [4] [0m[1mGurobi.Optimizer[22m[0m[1m([22m[90menv[39m::[0mNothing; [90menable_interrupts[39m::[0mBool[0m[1m)[22m
+[90m    @[39m [35mGurobi[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:372[24m[39m
+  [5] [0m[1mOptimizer[22m
+[90m    @[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:366[24m[39m[90m [inlined][39m
+  [6] [0m[1mGurobi.Optimizer[22m[0m[1m([22m[0m[1m)[22m
+[90m    @[39m [35mGurobi[39m [90m~/.julia/packages/Gurobi/kyCGc/src/MOI_wrapper/[39m[90m[4mMOI_wrapper.jl:366[24m[39m
+  [7] [0m[1m_instantiate_and_check[22m[0m[1m([22m[90moptimizer_constructor[39m::[0mAny[0m[1m)[22m
+[90m    @[39m [36mMathOptInterface[39m [90m~/.julia/packages/MathOptInterface/tVdNJ/src/[39m[90m[4minstantiate.jl:96[24m[39m
+  [8] [0m[1minstantiate[22m[0m[1m([22m[90moptimizer_constructor[39m::[0mAny; [90mwith_bridge_type[39m::[0mType[90m{Float64}[39m, [90mwith_cache_type[39m::[0mNothing[0m[1m)[22m
+[90m    @[39m [36mMathOptInterface[39m [90m~/.julia/packages/MathOptInterface/tVdNJ/src/[39m[90m[4minstantiate.jl:177[24m[39m
+  [9] [0m[1mset_optimizer[22m[0m[1m([22m[90mmodel[39m::[0mModel, [90moptimizer_constructor[39m::[0mAny; [90madd_bridges[39m::[0mBool, [90mkwargs[39m::[0m@Kwargs[90m{}[39m[0m[1m)[22m
+[90m    @[39m [32mJuMP[39m [90m~/.julia/packages/JuMP/vfM5V/src/[39m[90m[4moptimizer_interface.jl:503[24m[39m
+ [10] [0m[1mset_optimizer[22m
+[90m    @[39m [90m~/.julia/packages/JuMP/vfM5V/src/[39m[90m[4moptimizer_interface.jl:495[24m[39m[90m [inlined][39m
+ [11] [0m[1mModel[22m[0m[1m([22m[90moptimizer_factory[39m::[0mAny; [90mkwargs[39m::[0m@Kwargs[90m{}[39m[0m[1m)[22m
+[90m    @[39m [32mJuMP[39m [90m~/.julia/packages/JuMP/vfM5V/src/[39m[90m[4mJuMP.jl:204[24m[39m
+ [12] [0m[1mGenericModel[22m
+[90m    @[39m [90m~/.julia/packages/JuMP/vfM5V/src/[39m[90m[4mJuMP.jl:196[24m[39m[90m [inlined][39m
+ [13] [0m[1mbuild_bilevel_bess_model[22m[0m[1m([22m[90mdata[39m::[0m@NamedTuple[90m{generators::DataFrame, loads::DataFrame, loads_timeseries::Matrix{Int64}, storage::DataFrame, scenarios::DataFrame, market_req::DataFrame, T::Int64, K::Int64, n_gen::Int64, n_load::Int64, n_stor::Int64}[39m; [90mverbose[39m::[0mBool, [90mtime_limit[39m::[0mInt64[0m[1m)[22m
+[90m    @[39m [33mMain[39m [90m~/Library/Mobile Documents/com~apple~CloudDocs/Documents/MacBook_Pro/01work/python_code/juja/bilevel_bess/src/[39m[90m[4mbilevel_model.jl:60[24m[39m
+ [14] [0m[1mmain[22m[0m[1m([22m[0m[1m)[22m
+[90m    @[39m [33mMain[39m [90m~/Library/Mobile Documents/com~apple~CloudDocs/Documents/MacBook_Pro/01work/python_code/juja/bilevel_bess/[39m[90m[4mrun.jl:68[24m[39m
+ [15] top-level scope
+[90m    @[39m [90m~/Library/Mobile Documents/com~apple~CloudDocs/Documents/MacBook_Pro/01work/python_code/juja/bilevel_bess/[39m[90m[4mrun.jl:137[24m[39m
+

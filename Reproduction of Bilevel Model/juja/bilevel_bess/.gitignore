@@ -1,0 +1,39 @@
+# Julia
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+Manifest.toml
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results (可选：如果不想跟踪结果文件)
+# results/csv/*.csv
+# results/figures/*.png
+# results/reports/*.md
+
+# Gurobi
+gurobi.log
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build artifacts
+deps/
+build/
+
