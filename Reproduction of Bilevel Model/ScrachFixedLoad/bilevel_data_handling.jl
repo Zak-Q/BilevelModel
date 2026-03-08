@@ -22,6 +22,10 @@ Utility_data_df = filter_data_end(DataFrame(XLSX.readtable(worksheet, "Utility S
 
 # Considering only copper plate model, no need line information.
 
+# =============================================================================
+# Create dictionaries for buses, generators, and utility storage (push into dataframes)
+# =============================================================================
+
 # Create Bus_data_dic from Bus_data_df
 Bus_data_dic = Dict()
 for i in 1:nrow(Bus_data_df)
@@ -126,6 +130,7 @@ end
 
 Generator_data_keys = keys(Generator_data_dic) # Generator names
 Utility_data_keys = keys(Utility_storage_data_dic) # Utility storage names
+Bus_data_keys = keys(Bus_data_dic) # Bus names
 
 # Filter generators not connected to grid (Connected_Grid != 1)
 UGen = Set(key for key in Generator_data_keys if Generator_data_dic[key]["Connected_Grid"] == 1)
@@ -133,6 +138,30 @@ UGen = Set(key for key in Generator_data_keys if Generator_data_dic[key]["Connec
 # Filter utility storage not connected to grid (Connected_to_Grid != 1)
 UStorage = Set(key for key in Utility_data_keys if Utility_storage_data_dic[key]["Connected_to_Grid"] == 1)
 
+UBus = Set(Bus_data_keys)
+UBus_orig = UBus
+N = length(UBus)
+
+# ====================================================================
+# Create sets and Cross links for model building and result processing
+# ====================================================================
+
+# Generator to bus links
+Gen_Bus_links = Set()
+for value in UGen
+    Location_bus = Generator_data_dic[value]["Location_Bus"]
+    println("Generator ", value, " connected to Bus ", Location_bus)
+    push!(Gen_Bus_links, (value, Location_bus))
+end
+Gen_Bus_links_orig = Gen_Bus_links # Save original Bus_Region_links for use in different network model details
+
+# Storage to bus links
+Storage_Bus_links = Set()
+for value in UStorage
+    Location_bus = Utility_storage_data_dic[value]["Location_Bus"]
+    println("Utility Storage ", value, " connected to Bus ", Location_bus)
+    push!(Storage_Bus_links, (value, Location_bus))
+end
 
 # Generator type 1 set
 GenT1 = Set()
@@ -152,4 +181,123 @@ for value in UGen
         println("Generator ", value, " is Type ", Generation_type)
         push!(GenT2, (value))
     end
+end
+
+# Generator to technology links
+Gen_Tech_links = Set()
+for value in UGen
+    Gen_tech = Generator_data_dic[value]["Generation_Tech"]
+    Plot_color = Generator_data_dic[value]["Plot_Color"]
+    # println("Generator: ", value, " Technology: ", Gen_tech)
+    push!(Gen_Tech_links, (value, Gen_tech)) 
+end
+
+# Generator to plot color links
+Gen_Color_links = Set()
+for value in UGen
+    Plot_color = Generator_data_dic[value]["Plot_Color"]
+    push!(Gen_Color_links, (value, Plot_color))
+end
+
+# Storage to plot color links
+Storage_Color_links = Set()
+for value in UStorage
+    Plot_color = Utility_storage_data_dic[value]["Plot_Color"]
+    push!(Storage_Color_links, (value, Plot_color))
+end
+
+# Technology to plot color links
+Tech_Color_links = Set()
+for value in UGen
+    Gen_tech = Generator_data_dic[value]["Generation_Tech"]
+    Plot_color = Generator_data_dic[value]["Plot_Color"]
+    # println("Generator: ", value, " Technology: ", Gen_tech, " PlotColor: ", Plot_color)
+    push!(Tech_Color_links, (value, Gen_tech, Plot_color)) 
+end
+
+# ==============
+# Initial values
+# ==============
+
+# Global technical parameters
+SOC_utl_ini = 0.0 # Initial state of charge of batteries (Utility-scale)
+
+# Generation intial values
+# Slack_bus = determine_slack_bus(Generator_data_dic, Bus_data_dic, UGen, UBus) # Calls function to determine slack bus
+Base_power = Bus_data_dic[Slack_bus]["Base_kV"] # Determine base power from slack bus
+Pwr_Gen_ini_v = zeros(length(UGen), 1)
+Status_ini_v = zeros(length(UGen), 1) # Numbers of Units online for each generator
+S_Down_ini_v = zeros(length(UGen), 1)
+# MUT_ini_v = zeros(length(UGen), T)
+# MDT_ini_v = zeros(length(UGen), T)
+Status_ini = Dict()
+Pwr_Gen_ini = Dict()
+S_Down_ini = Dict()
+# MUT_ini = Dict()
+# MDT_ini = Dict()
+
+for (index, value) in enumerate(UGen)
+    Status_ini[value] = Status_ini_v[index]
+    Pwr_Gen_ini[value] = Pwr_Gen_ini_v[index]
+    S_Down_ini[value] = S_Down_ini_v[index]
+end
+# for (index, value) in enumerate(UGen)
+#     for t in subhorizon_total
+#         MUT_ini[(value, t)] = MUT_ini_v[index, t]
+#         MDT_ini[(value, t)] = MDT_ini_v[index, t]
+#     end
+# end
+
+# Utility storage initial values
+Chrg_rate_strg = Dict(value => Utility_storage_data_dic[value]["Maximum_Charge_Rate_MWh"] for value in UStorage)
+Dchrg_rate_strg = Dict(value => Utility_storage_data_dic[value]["Maximum_Discharge_Rate_MWh"] for value in UStorage)
+Min_SOC_strg = Dict(value => Utility_storage_data_dic[value]["Minimum_Storage_Capacity_MWh"] for value in UStorage)
+Max_SOC_strg = Dict(value => Utility_storage_data_dic[value]["Maximum_Storage_Capacity_MWh"] for value in UStorage)
+Charging_eff = Dict(value => Utility_storage_data_dic[value]["Charging_Efficiency"] / 100 for value in UStorage)
+Discharging_eff = Dict(value => Utility_storage_data_dic[value]["Discharging_Efficiency"] / 100 for value in UStorage)
+Enrg_Strg_ini = Dict(value => SOC_utl_ini for value in UStorage)
+
+
+# Initialize dictionaries for passing states
+prev_Status_var = Dict(g => Status_ini[g] for g in UGen)
+prev_SOC = Dict(s => Enrg_Strg_ini[s] for s in UStorage)
+prev_Pwr_Gen_var = Dict(g => Pwr_Gen_ini[g] for g in GenT1)
+# prev_psm_batt_egy = Dict(n => SOC_psm_ini for n in UBus_orig)
+# prev_S_Up_var = Dict(g => 0 for g in UGen)  # Track previous startups
+# prev_S_Down_var = Dict(g => 0 for g in UGen)  # Track previous shutdowns
+
+# =============================================================================
+# Copper plate model data handling: Redefine sets and links for copper plate model (all buses aggregated into one "System" bus)
+# =============================================================================
+
+if network_model in Cu_plate
+# Redefine UBus as a single "system" bus
+    global UBus = Set(["System"])
+    global N = length(UBus)
+    global Slack_bus = "System"
+    println("Copper plate aggregating all buses into system bus " , UBus)
+    println("Number of buses: ", N)
+
+    # Map all generators to the single "System" bus
+    global GenT1_Bus_links = Set()
+    for value in GenT1
+        push!(GenT1_Bus_links, (value, "System"))
+        println("Mapped generator $value to system bus")
+    end
+    # println("GenT1_Bus_links for Cu_plate: ", GenT1_Bus_links)
+
+    global GenT2_Bus_links = Set()
+    for value in GenT2
+        push!(GenT2_Bus_links, (value, "System"))
+        println("Mapped generator $value to system bus")
+    end
+    # println("GenT2_Bus_links for Cu_plate: ", GenT2_Bus_links)
+
+    # Map all storage to the single "System" bus
+    global Storage_Bus_links = Set()
+    for value in UStorage
+        push!(Storage_Bus_links, (value, "System"))
+        println("Mapped storage $value to system bus")
+    end
+    # println("Storage_Bus_links for copper plate: ", Storage_Bus_links)
 end
