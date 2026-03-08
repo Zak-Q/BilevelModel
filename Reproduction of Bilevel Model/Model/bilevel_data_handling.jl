@@ -20,7 +20,48 @@ end
 Generator_data_df = filter_data_end(DataFrame(XLSX.readtable(worksheet, "Generator Data")))
 Utility_data_df = filter_data_end(DataFrame(XLSX.readtable(worksheet, "Utility Storage Data")))
 
-# Considering only copper plate model, no need line and bus information.
+# Considering only copper plate model, no need line information.
+
+# Create Bus_data_dic from Bus_data_df
+Bus_data_dic = Dict()
+for i in 1:nrow(Bus_data_df)
+    # Base dictionary with all mandatory fields
+    bus_dict = Dict(
+        "Bus_Region" => Bus_data_df[!, "Bus Region"][i],
+        "Bus_Type" => Bus_data_df[!, "Bus Type"][i],
+        "Demand_Trace_Weightage" => Bus_data_df[!, "Demand Trace Weightage"][i],
+        "Power_Factor" => Bus_data_df[!, "Power Factor"][i],
+        "Prosumer_Demand_p" => Bus_data_df[!, "Prosumer Demand (%)"][i],
+        "Rooftop_PV_Capacity_MW" => Bus_data_df[!, "Rooftop PV Capacity (MW)"][i],
+        "Feedin_Price_Ratio" => Bus_data_df[!, "Feedin Price Ratio"][i],
+        "Maximum_Battery_Capacity_MWh" => Bus_data_df[!, "Maximum Battery Capacity (MWh)"][i],
+        "Minimum_Battery_Capacity_MWh" => Bus_data_df[!, "Minimum Battery Capacity (MWh)"][i],
+        "Maximum_Charge_Rate" => Bus_data_df[!, "Maximum Charge Rate (MW/h)"][i],
+        "Maximum_Discharge_Rate" => Bus_data_df[!, "Maximum Discharge Rate (MW/h)"][i],
+        "Battery_Efficiency" => Bus_data_df[!, "Battery Efficiency (%)"][i],
+        "Minimum_Voltage" => Bus_data_df[!, "Minimum Voltage (pu)"][i],
+        "Maximum_Voltage" => Bus_data_df[!, "Maximum Voltage (pu)"][i],
+        "Base_kV" => Bus_data_df[!, "Base_kV"][i],
+        "Demand_Trace_Name" => Bus_data_df[!, "Demand Trace Name"][i],
+        "Wind_Trace_Name" => Bus_data_df[!, "Wind Trace Name"][i],
+        "PV_Trace_Name" => Bus_data_df[!, "PV Trace Name"][i],
+        "CST_Trace_Name" => Bus_data_df[!, "CST Trace Name"][i],
+        "Rooftop_PV_Trace_Name" => Bus_data_df[!, "Rooftop PV Trace Name"][i]
+    )
+
+    # Conditionally add Bus_Subregion if the "Sub-region" column exists
+    if "Sub-region" in names(Bus_data_df)
+        bus_dict["Bus_Subregion"] = Bus_data_df[!, "Sub-region"][i]
+    end
+
+    # Conditionally add Bus_REZ if the "REZ" column exists
+    if "REZ" in names(Bus_data_df)
+        bus_dict["Bus_REZ"] = Bus_data_df[!, "REZ"][i]
+    end
+
+    # Assign the dictionary to the bus name
+    Bus_data_dic[Bus_data_df[!, "Bus Name"][i]] = bus_dict
+end
 
 Generator_data_dic = Dict(
     Generator_data_df[!, "Generator Name"][i] => Dict(
@@ -56,8 +97,8 @@ for i in 1:nrow(Utility_data_df)
         "Connected_to_Grid" => Utility_data_df[!, "Connected to Grid"][i],
         "Maximum_Storage_Capacity_MWh" => Utility_data_df[!, "Maximum Storage Capacity (MWh)"][i],
         "Minimum_Storage_Capacity_MWh" => Utility_data_df[!, "Minimum Storage Capacity (MWh)"][i],
-        "Maximum_Charge_Rate_MWh" => Utility_data_df[!, "Maximum Charge Rate (MW/h)"][i],
-        "Maximum_Discharge_Rate_MWh" => Utility_data_df[!, "Maximum Discharge Rate (MW/h)"][i],
+        "Maximum_Charge_Rate_MWh" => Utility_data_df[!, "Maximum Charge Rate (MW/h)"][i], # Assuming this is charge power
+        "Maximum_Discharge_Rate_MWh" => Utility_data_df[!, "Maximum Discharge Rate (MW/h)"][i], # Assuming this is discharge power
         "Plot_Color" => Utility_data_df[!, "Plot Color"][i]
     )
 
