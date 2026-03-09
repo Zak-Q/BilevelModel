@@ -69,6 +69,7 @@ if termination_status(model) == MOI.OPTIMAL || termination_status(model) == MOI.
     println("The optimal price for charging is: ", value.(price_charge))
     println("The optimal price for discharging is: ", value.(price_discharge))
     println("All variables: ", vars)
+    println("Var names: ", [name(var) for var in vars])
 else
     println("No solution available (status: ", termination_status(model), ")")
 end
