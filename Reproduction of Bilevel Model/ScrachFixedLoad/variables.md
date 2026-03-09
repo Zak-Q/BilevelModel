@@ -1,0 +1,14 @@
+BilevelVariableRe
+[pwr_discharge, 
+SOC, 
+price_charge, 
+pwr_gen[1], 
+pwr_charge_up, 
+u_discharge, 
+price_discharge, 
+pwr_gen[3], 
+pwr_discharge_up, 
+pwr_charge, 
+Clearing_price, 
+pwr_gen[2], 
+u_charge]
