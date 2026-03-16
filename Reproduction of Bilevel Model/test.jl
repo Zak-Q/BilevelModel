@@ -6,17 +6,17 @@ Pkg.add("Gurobi")
 using Plots, BilevelJuMP, Gurobi
 # change from hardcoded values to parameters for easier testing and further developments
 # time parameters
-T = 1:24
+T = 1:24 # To be 1 week of hourly data
 # generators 
 
-offer_price = [20, 30, 25] # $/ MWh
-Pmax = [40, 80, 60]
+offer_price = [20, 30, 25, 35, 40, 45] # $/ MWh
+Pmax = [40, 80, 60, 50, 70, 90] # MW
 n_gens = 1:length(Pmax)
 # storages
 n_storages = [1] #socket for further developments
 
 # Initial SOC for storage
-SOC_init = 25  # Initial state of charge, e.g., 50% of capacity
+SOC_init = 0  # Initial state of charge, e.g., 50% of capacity
 
 # Variable demands
 Pdemand_pu = [0.500984632, 0.457898237, 0.429643446, 0.415074058, 0.412996743, 0.418405645, 0.436150152, 0.447392694, 0.466319927, 0.477533855, 0.479361727, 0.478336055, 0.480954767, 0.486920206, 0.49496966, 0.510942916, 0.531998696, 0.540347797, 0.538768426, 0.553131553, 0.552731912, 0.544345579, 0.532461005, 0.504119974]
@@ -42,7 +42,7 @@ model = BilevelModel(Gurobi.Optimizer,
 @variable(Upper(model), 0 <= price_discharge[s in n_storages, t in T])
 @variable(Upper(model), u_charge[s in n_storages, t in T], Bin)
 @variable(Upper(model), u_discharge[s in n_storages, t in T], Bin)
-@variable(Upper(model), 0 <= SOC[s in n_storages, t in T] <= 50)
+@variable(Upper(model), 0 <= SOC[s in n_storages, t in T] <= 200)
 
 # Initial SOC constraint
 for s in n_storages
@@ -99,19 +99,42 @@ if termination_status(model) == MOI.OPTIMAL || termination_status(model) == MOI.
     charge = value.(pwr_charge)
     discharge = value.(pwr_discharge)
     clearing_price = value.(Clearing_price)
-    # 绘制发电机出力（黑色）
-    p = plot()
-    for g in n_gens
-        plot!(T, [gen[g, t] for t in T], label="Gen $g", color=:black, lw=2)
+    # 每个发电机一条曲线
+    gen_colors = [:dodgerblue3, :orange2, :seagreen3, :goldenrod2, :firebrick2, :slateblue3]
+    p = plot(legend=:outertopright)
+    for (idx, g) in enumerate(n_gens)
+        g_series = [gen[g, t] for t in T]
+        plot!(
+            T,
+            g_series,
+            color=gen_colors[mod1(idx, length(gen_colors))],
+            lw=2.5,
+            marker=:circle,
+            ms=3,
+            label="Gen $g"
+        )
     end
-    # 绘制储能充电功率（蓝色虚线）
-    for s in n_storages
-        plot!(T, [charge[s, t] - discharge[s, t] for t in T], label="Storage power $s", color=:blue, lw=2, linestyle=:dash)
-        #plot!(T, [discharge[s, t] for t in T], label="Storage Discharge $s", color=:blue, lw=2, linestyle=:solid)
+
+    # 每个储能一条净功率曲线：每时段(放电-充电)
+    storage_colors = [:black, :magenta3, :teal, :brown, :gray30]
+    for (idx, s) in enumerate(n_storages)
+        storage_net = [discharge[s, t] - charge[s, t] for t in T]
+        plot!(
+            T,
+            storage_net,
+            color=storage_colors[mod1(idx, length(storage_colors))],
+            lw=2.5,
+            linestyle=:dash,
+            marker=:diamond,
+            ms=3,
+            label="Storage $s net (discharge-charge)"
+        )
     end
+
+
     xlabel!("Hour")
     ylabel!("Power (MW)")
-    title!("Generation (black) & Storage (blue)")
+    title!("Generator and Storage Net Power Curves")
     gui()
     savefig(p, "plot.png")  # Save the plot as a PNG file
 else
