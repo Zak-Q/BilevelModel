@@ -3,7 +3,12 @@ using Pkg
 Pkg.add("Plots")
 Pkg.add("BilevelJuMP")
 Pkg.add("Gurobi")
+Pkg.add("CSV")
+Pkg.add("DataFrames")
 using Plots, BilevelJuMP, Gurobi
+using CSV, DataFrames, JuMP
+
+
 # change from hardcoded values to parameters for easier testing and further developments
 # time parameters
 T = 1:24 # To be 1 week of hourly data
@@ -99,6 +104,32 @@ if termination_status(model) == MOI.OPTIMAL || termination_status(model) == MOI.
     charge = value.(pwr_charge)
     discharge = value.(pwr_discharge)
     clearing_price = value.(Clearing_price)
+
+    # Save optimization results to CSV files
+    market_rows = Vector{NamedTuple{(:timestamp, :type, :unit, :value), Tuple{Int, String, String, Float64}}}()
+
+    for t in T
+        for g in n_gens
+            push!(market_rows, (timestamp=t, type="gen", unit="G$(g)", value=Float64(gen[g, t])))
+        end
+        for s in n_storages
+            push!(market_rows, (timestamp=t, type="batt_ch", unit="B$(s)", value=Float64(charge[s, t])))
+            push!(market_rows, (timestamp=t, type="batt_dis", unit="B$(s)", value=Float64(discharge[s, t])))
+            push!(market_rows, (timestamp=t, type="soc", unit="B$(s)", value=Float64(value(SOC[s, t]))))
+        end
+        push!(market_rows, (timestamp=t, type="clearing_price", unit="market", value=Float64(clearing_price[t])))
+    end
+
+    market_df = DataFrame(market_rows)
+    CSV.write(joinpath(@__DIR__, "market_results.csv"), market_df)
+
+    summary_df = DataFrame(
+        metric=["termination_status", "upper_objective", "lower_objective"],
+        value=[string(termination_status(model)), string(objective_value(Upper(model))), string(objective_value(Lower(model)))]
+    )
+    CSV.write(joinpath(@__DIR__, "market_results_summary.csv"), summary_df)
+    println("CSV files saved: market_results.csv, market_results_summary.csv")
+
     # 每个发电机一条曲线
     gen_colors = [:dodgerblue3, :orange2, :seagreen3, :goldenrod2, :firebrick2, :slateblue3]
     p = plot(legend=:outertopright)
