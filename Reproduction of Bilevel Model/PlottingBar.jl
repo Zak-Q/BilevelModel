@@ -1,0 +1,84 @@
+using Pkg
+
+Pkg.add("Plots")
+Pkg.add("BilevelJuMP")
+Pkg.add("Gurobi")
+Pkg.add("CSV")
+Pkg.add("DataFrames")
+Pkg.add("StatsPlots")
+using Plots, BilevelJuMP, Gurobi
+using CSV, DataFrames, JuMP, StatsPlots
+
+df = CSV.read("result.csv", DataFrame)
+
+
+gr()
+
+# 时间轴
+x = df.Time
+
+tech_data =[df.P_thermal df.P_dis]
+# hcat(p_bess_net, df.P_thermal)
+
+# 标签
+tech_labels = ["P_thermal" "P_dis"]
+p_ch_neg = .-df.P_ch
+p_demand = df.P_demand
+soc = df.SOC
+
+# 第一张图：无缝条形图 + 阶梯负载线
+p1 = groupedbar(
+    x,
+    tech_data,
+    bar_width = 1.0,
+    bar_position = :stack,
+    label = tech_labels,
+    color = [:orange :green],
+    linecolor = :transparent,
+    xlabel = "Hours",
+    ylabel = "Power (MW)",
+    legend = :outerright,
+    xticks = 1:24,
+    size = (1200, 600)
+)
+
+
+# 在 0 轴下方画充电功率
+bar!(
+    p1,
+    x,
+    p_ch_neg,
+    bar_width = 1.0,
+    bottom = 0,
+    label = "P_ch",
+    color = :purple,
+    linecolor = :transparent
+)
+
+# 叠加阶梯状负载线
+plot!(
+    p1,
+    x,
+    p_demand,
+    seriestype = :steppost,
+    color = :blue,
+    linewidth = 3,
+    label = "P_demand"
+)
+
+# 第二张图：SOC
+p2 = plot(
+    x,
+    soc,
+    color = :black,
+    linewidth = 2.5,
+    marker = :circle,
+    label = "SOC",
+    xlabel = "Hours",
+    ylabel = "Energy (MWh)",
+    xticks = 1:24,
+    legend = :topright,
+    size = (1200, 300)
+)
+
+plot(p1, p2, layout = (2,1), size = (1200, 900))

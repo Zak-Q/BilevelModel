@@ -93,81 +93,72 @@ optimize!(model)
 
 vars = all_variables(model)
 
-# check termination status before querying results
-println("Termination status: ", termination_status(model))
+# println("All variables in the model:")
+# for var in vars
+#     println(var)
+# end
 
-if termination_status(model) == MOI.OPTIMAL || termination_status(model) == MOI.FEASIBLE
-    println("The optimal value of the upper-level problem is: ", objective_value(Upper(model)))
-    println("The optimal value of the lower-level problem is: ", objective_value(Lower(model)))
-    # 获取变量值
-    gen = value.(pwr_gen)
-    charge = value.(pwr_charge)
-    discharge = value.(pwr_discharge)
-    clearing_price = value.(Clearing_price)
+df = DataFrame(Time = collect(T))
 
-    # Save optimization results to CSV files
-    market_rows = Vector{NamedTuple{(:timestamp, :type, :unit, :value), Tuple{Int, String, String, Float64}}}()
+df[!, :P_ch] = [sum(value(pwr_charge[s, t]) for s in n_storages) for t in T]
+df[!, :P_dis] = [sum(value(pwr_discharge[s, t]) for s in n_storages) for t in T]
+df[!, :SOC] = [sum(value(SOC[s, t]) for s in n_storages) for t in T]
+df[!, :P_thermal] = [sum(value(pwr_gen[g, t]) for g in n_gens) for t in T]
+df[!, :P_demand] = Pdemand
 
-    for t in T
-        for g in n_gens
-            push!(market_rows, (timestamp=t, type="gen", unit="G$(g)", value=Float64(gen[g, t])))
-        end
-        for s in n_storages
-            push!(market_rows, (timestamp=t, type="batt_ch", unit="B$(s)", value=Float64(charge[s, t])))
-            push!(market_rows, (timestamp=t, type="batt_dis", unit="B$(s)", value=Float64(discharge[s, t])))
-            push!(market_rows, (timestamp=t, type="soc", unit="B$(s)", value=Float64(value(SOC[s, t]))))
-        end
-        push!(market_rows, (timestamp=t, type="clearing_price", unit="market", value=Float64(clearing_price[t])))
-    end
+# println(df)
+CSV.write("result.csv", df)
+# ==========================================
+# Plotting
+# ==========================================
+# gr()
 
-    market_df = DataFrame(market_rows)
-    CSV.write(joinpath(@__DIR__, "market_results.csv"), market_df)
+# # 时间轴
+# x = df.Time
 
-    summary_df = DataFrame(
-        metric=["termination_status", "upper_objective", "lower_objective"],
-        value=[string(termination_status(model)), string(objective_value(Upper(model))), string(objective_value(Lower(model)))]
-    )
-    CSV.write(joinpath(@__DIR__, "market_results_summary.csv"), summary_df)
-    println("CSV files saved: market_results.csv, market_results_summary.csv")
+# # 储能净出力
+# p_bess_net = df.P_dis .- df.P_ch
 
-    # 每个发电机一条曲线
-    gen_colors = [:dodgerblue3, :orange2, :seagreen3, :goldenrod2, :firebrick2, :slateblue3]
-    p = plot(legend=:outertopright)
-    for (idx, g) in enumerate(n_gens)
-        g_series = [gen[g, t] for t in T]
-        plot!(
-            T,
-            g_series,
-            color=gen_colors[mod1(idx, length(gen_colors))],
-            lw=2.5,
-            marker=:circle,
-            ms=3,
-            label="Gen $g"
-        )
-    end
+# # 堆叠数据矩阵：每一列是一层
+# tech_data = hcat(p_bess_net, df.P_thermal)
 
-    # 每个储能一条净功率曲线：每时段(放电-充电)
-    storage_colors = [:black, :magenta3, :teal, :brown, :gray30]
-    for (idx, s) in enumerate(n_storages)
-        storage_net = [discharge[s, t] - charge[s, t] for t in T]
-        plot!(
-            T,
-            storage_net,
-            color=storage_colors[mod1(idx, length(storage_colors))],
-            lw=2.5,
-            linestyle=:dash,
-            marker=:diamond,
-            ms=3,
-            label="Storage $s net (discharge-charge)"
-        )
-    end
+# # 标签
+# tech_labels = ["P_dis - P_ch", "P_thermal"]
 
+# # 主图：堆叠面积图
+# p1 = areaplot(
+#     x,
+#     tech_data,
+#     label = tech_labels,
+#     stack = :stack,
+#     xlabel = "Time",
+#     ylabel = "Power (MW)",
+#     legend = :outerright,
+#     linewidth = 0,
+#     size = (1000, 500)
+# )
 
-    xlabel!("Hour")
-    ylabel!("Power (MW)")
-    title!("Generator and Storage Net Power Curves")
-    gui()
-    savefig(p, "plot.png")  # Save the plot as a PNG file
-else
-    println("No solution available (status: ", termination_status(model), ")")
-end
+# # 叠加负载曲线
+# plot!(
+#     p1,
+#     x,
+#     df.P_demand,
+#     label = "P_demand",
+#     linewidth = 3
+# )
+
+# # SOC 图
+# p2 = plot(
+#     x,
+#     df.SOC,
+#     label = "SOC",
+#     xlabel = "Time",
+#     ylabel = "Energy (MWh)",
+#     linewidth = 2.5,
+#     marker = :circle,
+#     legend = :topright,
+#     size = (1000, 300)
+# )
+
+# # 两张图放一起
+# plot(p1, p2, layout = (2,1), size = (1000, 800))
