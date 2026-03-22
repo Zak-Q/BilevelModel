@@ -17,6 +17,11 @@ gr()
 # 时间轴
 x = df.Time
 
+# Keep for further plotting of all technologies
+# tech_data = [p_blc p_brc p_hyd p_wnd p_sol p_batd p_gas p_unserved]
+# tech_labels = ["BlackCoal" "BrownCoal" "Hydro" "Wind" "UtilitySolar" "UtilityStorage" "Gas" "UnservedDemand"]
+# tech_colors = [:black :brown :navy :MediumSpringGreen :DarkOrange :purple :Salmon :gray]
+
 tech_data =[df.P_thermal df.P_dis]
 # hcat(p_bess_net, df.P_thermal)
 

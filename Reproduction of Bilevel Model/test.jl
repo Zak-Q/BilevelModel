@@ -108,57 +108,5 @@ df[!, :P_demand] = Pdemand
 
 # println(df)
 CSV.write("result.csv", df)
-# ==========================================
-# Plotting
-# ==========================================
-# gr()
 
-# # 时间轴
-# x = df.Time
 
-# # 储能净出力
-# p_bess_net = df.P_dis .- df.P_ch
-
-# # 堆叠数据矩阵：每一列是一层
-# tech_data = hcat(p_bess_net, df.P_thermal)
-
-# # 标签
-# tech_labels = ["P_dis - P_ch", "P_thermal"]
-
-# # 主图：堆叠面积图
-# p1 = areaplot(
-#     x,
-#     tech_data,
-#     label = tech_labels,
-#     stack = :stack,
-#     xlabel = "Time",
-#     ylabel = "Power (MW)",
-#     legend = :outerright,
-#     linewidth = 0,
-#     size = (1000, 500)
-# )
-
-# # 叠加负载曲线
-# plot!(
-#     p1,
-#     x,
-#     df.P_demand,
-#     label = "P_demand",
-#     linewidth = 3
-# )
-
-# # SOC 图
-# p2 = plot(
-#     x,
-#     df.SOC,
-#     label = "SOC",
-#     xlabel = "Time",
-#     ylabel = "Energy (MWh)",
-#     linewidth = 2.5,
-#     marker = :circle,
-#     legend = :topright,
-#     size = (1000, 300)
-# )
-
-# # 两张图放一起
-# plot(p1, p2, layout = (2,1), size = (1000, 800))

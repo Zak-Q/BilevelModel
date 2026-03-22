@@ -1,0 +1,21 @@
+{
+  "data_directory": "models",
+  "model_file": "Test5Bus.xlsx",
+  "demand_directory": "ESOO_2013_Load_Traces",
+  "solar_directory": "Solar_Trace",
+  "wind_directory": "0910_Wind_Traces",
+  "trace": {
+    "year": 2021,
+    "month": 7,
+    "day": 1
+  },
+  "planning": {
+    "operational_days": 3
+  },
+  "network_model": "Cu_plate",
+  "loss_factor": 0.1,
+  "reserve_margin": 0.1,
+  "solver_name": "Gurobi",
+  "mipgap": 0.01,
+  "plot_horizon_days": 3
+}

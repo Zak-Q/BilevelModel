@@ -34,23 +34,14 @@ for i in 1:nrow(Bus_data_df)
         "Bus_Region" => Bus_data_df[!, "Bus Region"][i],
         "Bus_Type" => Bus_data_df[!, "Bus Type"][i],
         "Demand_Trace_Weightage" => Bus_data_df[!, "Demand Trace Weightage"][i],
-        "Power_Factor" => Bus_data_df[!, "Power Factor"][i],
-        "Prosumer_Demand_p" => Bus_data_df[!, "Prosumer Demand (%)"][i],
-        "Rooftop_PV_Capacity_MW" => Bus_data_df[!, "Rooftop PV Capacity (MW)"][i],
-        "Feedin_Price_Ratio" => Bus_data_df[!, "Feedin Price Ratio"][i],
         "Maximum_Battery_Capacity_MWh" => Bus_data_df[!, "Maximum Battery Capacity (MWh)"][i],
         "Minimum_Battery_Capacity_MWh" => Bus_data_df[!, "Minimum Battery Capacity (MWh)"][i],
         "Maximum_Charge_Rate" => Bus_data_df[!, "Maximum Charge Rate (MW/h)"][i],
         "Maximum_Discharge_Rate" => Bus_data_df[!, "Maximum Discharge Rate (MW/h)"][i],
         "Battery_Efficiency" => Bus_data_df[!, "Battery Efficiency (%)"][i],
-        "Minimum_Voltage" => Bus_data_df[!, "Minimum Voltage (pu)"][i],
-        "Maximum_Voltage" => Bus_data_df[!, "Maximum Voltage (pu)"][i],
-        "Base_kV" => Bus_data_df[!, "Base_kV"][i],
         "Demand_Trace_Name" => Bus_data_df[!, "Demand Trace Name"][i],
         "Wind_Trace_Name" => Bus_data_df[!, "Wind Trace Name"][i],
         "PV_Trace_Name" => Bus_data_df[!, "PV Trace Name"][i],
-        "CST_Trace_Name" => Bus_data_df[!, "CST Trace Name"][i],
-        "Rooftop_PV_Trace_Name" => Bus_data_df[!, "Rooftop PV Trace Name"][i]
     )
 
     # Conditionally add Bus_Subregion if the "Sub-region" column exists
@@ -69,22 +60,14 @@ end
 
 Generator_data_dic = Dict(
     Generator_data_df[!, "Generator Name"][i] => Dict(
-        # "Location_Bus" => Generator_data_df[!, "Location Bus"][i],
+        "Location_Bus" => Generator_data_df[!, "Location Bus"][i],
         "Number_Units" => Generator_data_df[!, "Number of Units"][i],
         "Connected_Grid" => Generator_data_df[!, "Connected to Grid"][i],
         "Apparent_Power_Rating" => Generator_data_df[!, "Apparent Power Rating (MVA)"][i],
         "Fix_Cost" => Generator_data_df[!, "Fix Cost (\$)"][i],
-        "Start_up_Cost" => Generator_data_df[!, "Start up Cost (\$)"][i],
-        "Shut_down_Cost" => Generator_data_df[!, "Shut down Cost (\$)"][i],
         "Variable_Cost" => Generator_data_df[!, "Variable Cost (\$/MW)"][i],
         "Maximum_Real_Power" => Generator_data_df[!, "Maximum Real Power (MW)"][i],
         "Minimum_Real_Power" => Generator_data_df[!, "Minimum Real Power (MW)"][i],
-        "Maximum_Reactive_Power" => Generator_data_df[!, "Maximum Reactive Power (MVar)"][i],
-        "Minimum_Reactive_Power" => Generator_data_df[!, "Minimum Reactive Power (MVar)"][i],
-        # "Ramp_Up_Rate" => Generator_data_df[!, "Ramp Up Rate (MW/h)"][i],
-        # "Ramp_Down_Rate" => Generator_data_df[!, "Ramp Down Rate (MW/h)"][i],
-        # "MUT_h" => Generator_data_df[!, "MUT (hour)"][i],
-        # "MDT_h" => Generator_data_df[!, "MDT (hour)"][i],
         "Generation_Type" => Generator_data_df[!, "Generation Type"][i],
         "Plot_Color" => Generator_data_df[!, "Plot Color"][i],
         "Generation_Tech" => Generator_data_df[!, "Generation Tech"][i]
@@ -97,7 +80,7 @@ Utility_storage_data_dic = Dict()
 for i in 1:nrow(Utility_data_df)
     # Base dictionary with all mandatory fields
     utility_dict = Dict(
-        # "Location_Bus" => Utility_data_df[!, "Location Bus"][i],
+        "Location_Bus" => Utility_data_df[!, "Location Bus"][i],
         "Connected_to_Grid" => Utility_data_df[!, "Connected to Grid"][i],
         "Maximum_Storage_Capacity_MWh" => Utility_data_df[!, "Maximum Storage Capacity (MWh)"][i],
         "Minimum_Storage_Capacity_MWh" => Utility_data_df[!, "Minimum Storage Capacity (MWh)"][i],
@@ -223,30 +206,9 @@ end
 SOC_utl_ini = 0.0 # Initial state of charge of batteries (Utility-scale)
 
 # Generation intial values
-# Slack_bus = determine_slack_bus(Generator_data_dic, Bus_data_dic, UGen, UBus) # Calls function to determine slack bus
+Slack_bus = determine_slack_bus(Generator_data_dic, Bus_data_dic, UGen, UBus) # Calls function to determine slack bus
 Base_power = Bus_data_dic[Slack_bus]["Base_kV"] # Determine base power from slack bus
-Pwr_Gen_ini_v = zeros(length(UGen), 1)
-Status_ini_v = zeros(length(UGen), 1) # Numbers of Units online for each generator
-S_Down_ini_v = zeros(length(UGen), 1)
-# MUT_ini_v = zeros(length(UGen), T)
-# MDT_ini_v = zeros(length(UGen), T)
-Status_ini = Dict()
-Pwr_Gen_ini = Dict()
-S_Down_ini = Dict()
-# MUT_ini = Dict()
-# MDT_ini = Dict()
 
-for (index, value) in enumerate(UGen)
-    Status_ini[value] = Status_ini_v[index]
-    Pwr_Gen_ini[value] = Pwr_Gen_ini_v[index]
-    S_Down_ini[value] = S_Down_ini_v[index]
-end
-# for (index, value) in enumerate(UGen)
-#     for t in subhorizon_total
-#         MUT_ini[(value, t)] = MUT_ini_v[index, t]
-#         MDT_ini[(value, t)] = MDT_ini_v[index, t]
-#     end
-# end
 
 # Utility storage initial values
 Chrg_rate_strg = Dict(value => Utility_storage_data_dic[value]["Maximum_Charge_Rate_MWh"] for value in UStorage)
@@ -258,13 +220,6 @@ Discharging_eff = Dict(value => Utility_storage_data_dic[value]["Discharging_Eff
 Enrg_Strg_ini = Dict(value => SOC_utl_ini for value in UStorage)
 
 
-# Initialize dictionaries for passing states
-prev_Status_var = Dict(g => Status_ini[g] for g in UGen)
-prev_SOC = Dict(s => Enrg_Strg_ini[s] for s in UStorage)
-prev_Pwr_Gen_var = Dict(g => Pwr_Gen_ini[g] for g in GenT1)
-# prev_psm_batt_egy = Dict(n => SOC_psm_ini for n in UBus_orig)
-# prev_S_Up_var = Dict(g => 0 for g in UGen)  # Track previous startups
-# prev_S_Down_var = Dict(g => 0 for g in UGen)  # Track previous shutdowns
 
 # =============================================================================
 # Copper plate model data handling: Redefine sets and links for copper plate model (all buses aggregated into one "System" bus)
