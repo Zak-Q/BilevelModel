@@ -1,0 +1,203 @@
+first,second
+Bus Data,"59×5 DataFrame
+ Row │ Bus Name  Demand Trace Weightage  Demand Trace Name                  Wind Trace Name                    PV Trace Name
+     │ Any       Any                     Any                                Any                                Any
+─────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ N_101     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N8_WM_Cooma-Monaro_RefYear4006     REZ_N8_Cooma-Monaro_SAT_RefYear4…
+   2 │ N_102     0.045                   NSW_RefYear_2023_STEP_CHANGE_POE…  N5_WM_South_West_NSW_RefYear4006   REZ_N5_South_West_NSW_SAT_RefYea…
+   3 │ N_201     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N2_WM_New_England_RefYear4006      REZ_N2_New_England_SAT_RefYear40…
+   4 │ N_202     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N10_WFL_Hunter_Coast_RefYear4006   REZ_N6_Wagga_Wagga_SAT_RefYear40…
+   5 │ N_203     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N9_WM_Hunter-Central_Coast_RefYe…  REZ_N5_South_West_NSW_SAT_RefYea…
+   6 │ N_204     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N3_WM_Central-West_Orana_RefYear…  REZ_N5_South_West_NSW_SAT_RefYea…
+   7 │ N_205     0.039                   NSW_RefYear_2023_STEP_CHANGE_POE…  N1_WM_North_West_NSW_RefYear4006   REZ_N1_North_West_NSW_SAT_RefYea…
+   8 │ N_206     0.013                   NSW_RefYear_2023_STEP_CHANGE_POE…  N3_WM_Central-West_Orana_RefYear…  REZ_N3_Central-West_Orana_SAT_Re…
+   9 │ N_207     0.188                   NSW_RefYear_2023_STEP_CHANGE_POE…  N2_WM_New_England_RefYear4006      REZ_N2_New_England_SAT_RefYear40…
+  10 │ N_208     0.021                   NSW_RefYear_2023_STEP_CHANGE_POE…  N9_WM_Hunter-Central_Coast_RefYe…  REZ_N9_Hunter-Central_Coast_SAT_…
+  11 │ N_209     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N9_WM_Hunter-Central_Coast_RefYe…  REZ_N9_Hunter-Central_Coast_SAT_…
+  12 │ N_210     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N9_WM_Hunter-Central_Coast_RefYe…  REZ_N9_Hunter-Central_Coast_SAT_…
+  13 │ N_211     0.17                    NSW_RefYear_2023_STEP_CHANGE_POE…  N11_WFL_Illawarra_Coast_RefYear4…  REZ_N9_Hunter-Central_Coast_SAT_…
+  14 │ N_212     0.166                   NSW_RefYear_2023_STEP_CHANGE_POE…  N11_WFL_Illawarra_Coast_RefYear4…  REZ_N9_Hunter-Central_Coast_SAT_…
+  15 │ N_213     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N11_WFL_Illawarra_Coast_RefYear4…  REZ_N9_Hunter-Central_Coast_SAT_…
+  16 │ N_214     0                       NSW_RefYear_2023_STEP_CHANGE_POE…  N2_WM_New_England_RefYear4006      REZ_N2_New_England_SAT_RefYear40…
+  17 │ N_215     0.048                   NSW_RefYear_2023_STEP_CHANGE_POE…  N3_WM_Central-West_Orana_RefYear…  REZ_N3_Central-West_Orana_SAT_Re…
+  18 │ N_216     0.184                   NSW_RefYear_2023_STEP_CHANGE_POE…  N7_WM_Tumut_RefYear4006            REZ_N7_Tumut_SAT_RefYear4006
+  19 │ N_217     0.126                   NSW_RefYear_2023_STEP_CHANGE_POE…  N6_WM_Wagga_Wagga_RefYear4006      REZ_N6_Wagga_Wagga_SAT_RefYear40…
+  20 │ N_301     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V5_WM_Gippsland_RefYear4006        REZ_V5_Gippsland_SAT_RefYear4006
+  21 │ N_302     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V5_WM_Gippsland_RefYear4006        REZ_V5_Gippsland_SAT_RefYear4006
+  22 │ N_303     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V5_WM_Gippsland_RefYear4006        REZ_V5_Gippsland_SAT_RefYear4006
+  23 │ N_304     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V1_WM_Ovens_Murray_RefYear4006     REZ_V1_Ovens_Murray_SAT_RefYear4…
+  24 │ N_305     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V6_WM_Central_North_Vic_RefYear4…  REZ_V6_Central_North_Vic_SAT_Ref…
+  25 │ N_306     0.2236                  VIC_RefYear_2023_STEP_CHANGE_POE…  V3_WM_Western_Victoria_RefYear40…  REZ_V3_Western_Victoria_SAT_RefY…
+  26 │ N_307     0.1182                  VIC_RefYear_2023_STEP_CHANGE_POE…  V3_WM_Western_Victoria_RefYear40…  REZ_V3_Western_Victoria_SAT_RefY…
+  27 │ N_308     0.1191                  VIC_RefYear_2023_STEP_CHANGE_POE…  V4_WM_South_West_Victoria_RefYea…  REZ_V4_South_West_Victoria_SAT_R…
+  28 │ N_309     0.0355                  VIC_RefYear_2023_STEP_CHANGE_POE…  V2_WM_Murray_River_RefYear4006     REZ_V2_Murray_River_SAT_RefYear4…
+  29 │ N_310     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V2_WM_Murray_River_RefYear4006     REZ_V2_Murray_River_SAT_RefYear4…
+  30 │ N_311     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V2_WM_Murray_River_RefYear4006     REZ_V2_Murray_River_SAT_RefYear4…
+  31 │ N_312     0.0209                  VIC_RefYear_2023_STEP_CHANGE_POE…  V2_WM_Murray_River_RefYear4006     REZ_V2_Murray_River_SAT_RefYear4…
+  32 │ N_313     0.4373                  VIC_RefYear_2023_STEP_CHANGE_POE…  V1_WM_Ovens_Murray_RefYear4006     REZ_V1_Ovens_Murray_SAT_RefYear4…
+  33 │ N_314     0.0455                  VIC_RefYear_2023_STEP_CHANGE_POE…  V4_WM_South_West_Victoria_RefYea…  REZ_V4_South_West_Victoria_SAT_R…
+  34 │ N_315     0                       VIC_RefYear_2023_STEP_CHANGE_POE…  V8_WFL_Portland_Coast_RefYear4006  REZ_V4_South_West_Victoria_SAT_R…
+  35 │ N_401     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q9_WM_Banana_RefYear4006           REZ_Q9_Banana_SAT_RefYear4006
+  36 │ N_402     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q6_WM_Fitzroy_RefYear4006          REZ_Q6_Fitzroy_SAT_RefYear4006
+  37 │ N_403     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q6_WM_Fitzroy_RefYear4006          REZ_Q6_Fitzroy_SAT_RefYear4006
+  38 │ N_404     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q6_WM_Fitzroy_RefYear4006          REZ_Q6_Fitzroy_SAT_RefYear4006
+  39 │ N_405     0.22                    QLD_RefYear_2023_STEP_CHANGE_POE…  Q7_WM_Wide_Bay_RefYear4006         REZ_Q7_Wide_Bay_SAT_RefYear4006
+  40 │ N_406     0.1644                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q2_WH_North_Qld_Clean_Energy_Hub…  REZ_Q2_North_Qld_Clean_Energy_Hu…
+  41 │ N_407     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q4_WM_Isaac_RefYear4006            REZ_Q4_Isaac_SAT_RefYear4006
+  42 │ N_408     0.0333                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q6_WM_Fitzroy_RefYear4006          REZ_Q7_Wide_Bay_SAT_RefYear4006
+  43 │ N_409     0.0578                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q7_WM_Wide_Bay_RefYear4006         REZ_Q7_Wide_Bay_SAT_RefYear4006
+  44 │ N_410     0.1178                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q8_WM_Darling_Downs_RefYear4006    REZ_Q7_Wide_Bay_SAT_RefYear4006
+  45 │ N_411     0.1278                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q7_WM_Wide_Bay_RefYear4006         REZ_Q7_Wide_Bay_SAT_RefYear4006
+  46 │ N_412     0.2789                  QLD_RefYear_2023_STEP_CHANGE_POE…  Q7_WM_Wide_Bay_RefYear4006         REZ_Q7_Wide_Bay_SAT_RefYear4006
+  47 │ N_413     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q8_WM_Darling_Downs_RefYear4006    REZ_Q8_Darling_Downs_SAT_RefYear…
+  48 │ N_414     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q8_WM_Darling_Downs_RefYear4006    REZ_Q8_Darling_Downs_SAT_RefYear…
+  49 │ N_415     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q8_WM_Darling_Downs_RefYear4006    REZ_Q8_Darling_Downs_SAT_RefYear…
+  50 │ N_416     0                       QLD_RefYear_2023_STEP_CHANGE_POE…  Q8_WM_Darling_Downs_RefYear4006    REZ_Q8_Darling_Downs_SAT_RefYear…
+  51 │ N_501     0                       SA_RefYear_2023_STEP_CHANGE_POE1…  S5_WM_Northern_SA_RefYear4006      REZ_S5_Northern_SA_SAT_RefYear40…
+  52 │ N_502     0                       SA_RefYear_2023_STEP_CHANGE_POE1…  S3_WM_Mid-North_SA_RefYear4006     REZ_S3_Mid-North_SA_SAT_RefYear4…
+  53 │ N_503     0                       SA_RefYear_2023_STEP_CHANGE_POE1…  S4_WM_Yorke_Peninsula_RefYear4006  REZ_S4_Yorke_Peninsula_SAT_RefYe…
+  54 │ N_504     0.1304                  SA_RefYear_2023_STEP_CHANGE_POE1…  S3_WM_Mid-North_SA_RefYear4006     REZ_S3_Mid-North_SA_SAT_RefYear4…
+  55 │ N_505     0                       SA_RefYear_2023_STEP_CHANGE_POE1…  S3_WM_Mid-North_SA_RefYear4006     REZ_S3_Mid-North_SA_SAT_RefYear4…
+  56 │ N_506     0                       SA_RefYear_2023_STEP_CHANGE_POE1…  S4_WM_Yorke_Peninsula_RefYear4006  REZ_S4_Yorke_Peninsula_SAT_RefYe…
+  57 │ N_507     0.4348                  SA_RefYear_2023_STEP_CHANGE_POE1…  S3_WM_Mid-North_SA_RefYear4006     REZ_S3_Mid-North_SA_SAT_RefYear4…
+  58 │ N_508     0.3478                  SA_RefYear_2023_STEP_CHANGE_POE1…  S1_WM_South_East_SA_RefYear4006    REZ_S5_Northern_SA_SAT_RefYear40…
+  59 │ N_509     0.087                   SA_RefYear_2023_STEP_CHANGE_POE1…  S1_WM_South_East_SA_RefYear4006    REZ_S1_South_East_SA_SAT_RefYear…"
+Utility Storage Data,"21×8 DataFrame
+ Row │ Utility Storage Name     Location Bus  Maximum Storage Capacity (MWh)  Minimum Storage Capacity (MWh)  Maximum Charge Rate (MW/h)  Maximum Discharge Rate (MW/h)  Charging Efficiency (%)  Discharging Efficiency (%)
+     │ Any                      Any           Any                             Any                             Any                         Any                            Any                      Any
+─────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ Koorangie_Gannawarra     N_102         210                             0                               105                         105                            90                       90
+   2 │ Eraring                  N_202         460                             0                               230                         230                            90                       90
+   3 │ Liddell                  N_206         500                             0                               250                         250                            90                       90
+   4 │ BrokenHill_QuornPark     N_212         78                              0                               39                          39                             90                       90
+   5 │ Capital_agg              N_216         110                             0                               55                          55                             90                       90
+   6 │ Riverina_agg             N_217         160                             0                               80                          80                             90                       90
+   7 │ Hazelwood_LaTrobeValley  N_303         300                             0                               150                         150                            90                       90
+   8 │ Bulgana                  N_305         20                              0                               10                          10                             90                       90
+   9 │ Ballarat                 N_306         30                              0                               15                          15                             90                       90
+  10 │ PhilipIsland             N_312         5                               0                               2.5                         2.5                            90                       90
+  11 │ MelbourneREH_Rangebank   N_313         800                             0                               400                         400                            90                       90
+  12 │ Victorian                N_314         300                             0                               150                         150                            90                       90
+  13 │ Bouldercombe             N_407         50                              0                               25                          25                             90                       90
+  14 │ Chinchilla_WandoanSout   N_410         200                             0                               100                         100                            90                       90
+  15 │ Greenbank                N_412         200                             0                               100                         100                            90                       90
+  16 │ Tarong                   N_413         300                             0                               150                         150                            90                       90
+  17 │ Hornsdale_agg            N_504         521                             0                               260.5                       260.5                          90                       90
+  18 │ TorrensIsland            N_505         251                             0                               125.5                       125.5                          90                       90
+  19 │ Dalrymple                N_506         30                              0                               15                          15                             90                       90
+  20 │ TailemBend_agg           N_508         57                              0                               28.5                        28.5                           90                       90
+  21 │ LakeBonney               N_509         25                              0                               12.5                        12.5                           90                       90"
+Generator Data,"110×9 DataFrame
+ Row │ Generator Name         Location Bus  Number of Units  Fix Cost ($)  Variable Cost ($/MW)  Maximum Real Power (MW)  Minimum Real Power (MW)  Generation Type  Generation Tech
+     │ Any                    Any           Any              Any           Any                   Any                      Any                      Any              Any
+─────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ Hydro_SNSW1            N_101         1                18917.8       8.99                  1550                     0                        1                HYDR
+   2 │ Hydro_WNV_SNSW         N_102         1                7933.25       8.99                  650                      0                        1                HYDR
+   3 │ Solar_WNV_SNSW         N_102         1                0             0                     1922                     0                        2                SOLR
+   4 │ Wind_WNV_SNSW          N_102         1                0             0                     113                      0                        2                WND
+   5 │ Bayswater_CNSW         N_201         4                3224.3        49.46                 685                      239.75                   1                BlCT
+   6 │ Eraring_SNW            N_202         4                3389.04       49.46                 720                      252.0                    1                BlCT
+   7 │ ValesPointB_SNW        N_203         2                3106.62       49.46                 660                      231.0                    1                BlCT
+   8 │ Colongra_SNW           N_203         4                557.842       208.96                181                      68.78                    1                OCGT
+   9 │ MtPiper_CNSW           N_204         2                3436.11       49.46                 730                      255.5                    1                BlCT
+  10 │ Solar_NNSW_CNSW        N_205         1                0             0                     1177                     0                        2                SOLR
+  11 │ Wind_NNSW              N_205         1                0             0                     445                      0                        2                WND
+  12 │ Solar_CNSW             N_206         1                0             0                     2170                     0                        2                SOLR
+  13 │ Hunter_SNW             N_206         1                2376.22       208.96                771                      292.98                   1                OCGT
+  14 │ Wind_CNSW              N_206         1                0             0                     255                      0                        2                WND
+  15 │ Smithfield_SNW         N_212         1                388.332       208.96                126                      47.88                    1                OCGT
+  16 │ Tallawara_SNW          N_214         1                3333.2        126.14                400                      152                      1                CCGT
+  17 │ TallawaraB_SNW         N_214         1                986.24        208.96                320                      121.6                    1                OCGT
+  18 │ PumpedHydro_CNSW       N_214         1                3014.64       8.99                  247                      0                        1                HYDR
+  19 │ Solar_CNSW_SNSW        N_215         1                0             0                     688                      0                        2                SOLR
+  20 │ Wind_CNSW_SNSW         N_215         1                0             0                     451                      0                        2                WND
+  21 │ Solar_SNSW1            N_216         1                0             0                     10                       0                        2                SOLR
+  22 │ Wind_SNSW              N_216         1                0             0                     1562                     0                        2                WND
+  23 │ Solar_SNSW2            N_217         1                0             0                     1025                     0                        2                SOLR
+  24 │ Hydro_SNSW2            N_217         1                1708.7        8.99                  140                      0                        1                HYDR
+  25 │ Uranquinty_SNSW        N_217         2                533.186       208.96                173                      65.74                    1                OCGT
+  26 │ Snowy2.0_SNSW          N_217         6                4479.23       8.99                  367                      0                        1                HYDR
+  27 │ Tumut3_SNSW            N_217         5                3051.25       8.99                  250                      0                        1                HYDR
+  28 │ UpperTumut_SNSW        N_217         8                1000.81       8.99                  82                       0                        1                HYDR
+  29 │ LoyYangA_SEV           N_301         4                2108.74       39.568                560                      196                      1                BrCT
+  30 │ LoyYangB_SEV           N_301         2                2184.05       39.568                580                      203                      1                BrCT
+  31 │ Bairnsdale_SEV         N_301         2                144.854       208.96                47                       17.86                    1                OCGT
+  32 │ JeeralangA_SEV         N_301         4                163.346       208.96                53                       20.14                    1                OCGT
+  33 │ YallournW_SEV          N_302         4                1317.96       39.568                350                      122.5                    1                BrCT
+  34 │ ValleyPower_SEV        N_303         6                154.1         208.96                50                       19                       1                OCGT
+  35 │ Hydro_WNV              N_304         1                1177.78       8.99                  96.5                     0                        1                HYDR
+  36 │ Solar_WNV1             N_305         1                0             0                     100                      0                        2                SOLR
+  37 │ Wind_WNV1              N_305         1                0             0                     915                      0                        2                WND
+  38 │ Wind_WNV2              N_306         1                0             0                     998                      0                        2                WND
+  39 │ Wind_WNV3              N_307         1                0             0                     1300                     0                        2                WND
+  40 │ Mortlake_WNV           N_308         2                899.944       208.96                292                      110.96                   1                OCGT
+  41 │ Wind_WNV4              N_308         1                0             0                     917                      0                        2                WND
+  42 │ Solar_WNV2             N_309         1                0             0                     788                      0                        2                SOLR
+  43 │ Wind_WNV4              N_309         1                0             0                     58                       0                        2                WND
+  44 │ Wind_SEV               N_312         1                0             0                     107                      0                        2                WND
+  45 │ Newport_MEL            N_313         1                1541          208.96                500                      190                      1                OCGT
+  46 │ LavertonNorth_MEL      N_313         2                480.792       208.96                156                      59.28                    1                OCGT
+  47 │ Somerton_MEL           N_313         4                130.985       208.96                42.5                     16.15                    1                OCGT
+  48 │ Wind_WNV5              N_314         1                0             0                     1069                     0                        2                WND
+  49 │ DarlingDowns_Steam_SQ  N_401         1                2333.24       126.14                280                      106.4                    1                CCGT
+  50 │ DarlingDowns_Gas_SQ    N_401         3                1012.46       126.14                121.5                    46.17                    1                CCGT
+  51 │ CondamineA_Steam_SQ    N_401         1                474.981       126.14                57                       21.66                    1                CCGT
+  52 │ CondamineA_Gas_SQ      N_401         2                366.652       126.14                44                       16.72                    1                CCGT
+  53 │ Solar_WNV3             N_401         1                0             0                     94                       0                        2                SOLR
+  54 │ Tarong_SQ              N_401         4                1647.45       49.46                 350                      122.5                    1                BlCT
+  55 │ TarongNorth_SQ         N_401         1                2118.15       49.46                 450                      157.5                    1                BlCT
+  56 │ Braemar_SQ             N_401         6                554.76        208.96                180                      68.4                     1                OCGT
+  57 │ CallideB_CQ            N_402         2                1647.45       49.46                 350                      122.5                    1                BlCT
+  58 │ CallideC_CQ            N_402         2                1976.94       49.46                 420                      147                      1                BlCT
+  59 │ Stanwell_CQ            N_403         4                1718.05       49.46                 365                      127.75                   1                BlCT
+  60 │ Barcaldine_CQ          N_403         1                114.034       208.96                37                       14.06                    1                OCGT
+  61 │ Gladstone_GG           N_404         6                1317.96       49.46                 280                      98                       1                BlCT
+  62 │ Solar_SQ               N_405         1                0             0                     526                      0                        2                SOLR
+  63 │ YarwinCogen_GG         N_405         1                1499.94       126.14                180                      68.4                     1                CCGT
+  64 │ CCGT_NQ                N_406         1                2033.25       126.14                244                      92.72                    1                CCGT
+  65 │ Hydro_NQ               N_406         1                1916.18       8.99                  157                      0                        1                HYDR
+  66 │ Solar_NQ               N_406         1                0             0                     1198                     0                        2                SOLR
+  67 │ MtStuart_NQ            N_406         3                449.972       208.96                146                      55.48                    1                OCGT
+  68 │ Wind_NQ                N_406         1                0             0                     381                      0                        2                WND
+  69 │ Hydro_NQ               N_406         1                4967.44       8.99                  407                      0                        1                HYDR
+  70 │ Solar_CQ1              N_407         1                0             0                     620                      0                        2                SOLR
+  71 │ Wind_CQ                N_407         1                0             0                     450                      0                        2                WND
+  72 │ Solar_CQ2              N_408         1                0             0                     99                       0                        2                SOLR
+  73 │ Solar_SQ1              N_410         1                0             0                     1389                     0                        2                SOLR
+  74 │ Wind_SQ1               N_410         1                0             0                     173                      0                        2                WND
+  75 │ Swanbank_SQ            N_412         1                3208.2        126.14                385                      146.3                    1                CCGT
+  76 │ PumpedHydro_SQ         N_412         2                3478.43       8.99                  285                      0                        1                HYDR
+  77 │ KoganCreek_SQ          N_413         1                3502.01       49.46                 744                      260.4                    1                BlCT
+  78 │ Wind_SQ2               N_413         1                0             0                     705                      0                        2                WND
+  79 │ Solar_SQ2              N_413         1                0             0                     40                       0                        2                SOLR
+  80 │ Roma_SQ                N_413         2                123.28        208.96                40                       15.2                     1                OCGT
+  81 │ Oakey_SQ               N_414         2                533.186       208.96                173                      65.74                    1                OCGT
+  82 │ Solar_SQ3              N_415         1                0             0                     237                      0                        2                SOLR
+  83 │ Millmerran_SQ          N_415         2                2005.18       49.46                 426                      149.1                    1                BlCT
+  84 │ Wind_SQ3               N_416         1                0             0                     923                      0                        2                WND
+  85 │ Solar_SQ4              N_416         1                0             0                     64                       0                        2                SOLR
+  86 │ TorrensIsland_CSA      N_502         4                616.4         208.96                200                      76                       1                OCGT
+  87 │ PelicanPoint_CSA       N_503         1                1424.94       126.14                171                      64.98                    1                CCGT
+  88 │ Solar_NSA              N_504         1                0             0                     393                      0                        2                SOLR
+  89 │ Hallett_CSA            N_504         1                853.283       208.96                276.86                   105.207                  1                OCGT
+  90 │ PortLincoln_NSA        N_504         3                231.15        208.96                75                       28.5                     1                OCGT
+  91 │ Wind_CSA_NSA           N_504         1                0             0                     2337                     0                        2                WND
+  92 │ Wind_NSA               N_506         1                0             0                     91                       0                        2                WND
+  93 │ OCGT_CSA               N_507         1                2493.34       208.96                809                      307.42                   1                OCGT
+  94 │ CCGT_CSA               N_507         1                1499.94       126.14                180                      68.4                     1                CCGT
+  95 │ Solar_CSA              N_508         1                0             0                     312                      0                        2                SOLR
+  96 │ ICE_CSA                N_508         1                884.534       208.96                287                      109.06                   1                OCGT
+  97 │ OCGT_SESA              N_509         1                440.726       208.96                143                      54.34                    1                OCGT
+  98 │ Wind_SESA              N_509         1                0             0                     325                      0                        2                WND
+  99 │ New_Solar_N3           N_206         1                0             0                     6850                     0                        2                SOLR
+ 100 │ New_Wind_N3            N_206         1                0             0                     3000                     0                        2                WND
+ 101 │ New_Solar_N2           N_207         1                0             0                     2985                     0                        2                SOLR
+ 102 │ New_Wind_N2            N_207         1                0             0                     7400                     0                        2                WND
+ 103 │ New_Solar_Q8           N_415         1                0             0                     6992                     0                        2                SOLR
+ 104 │ New_Wind_Q8            N_416         1                0             0                     5600                     0                        2                WND
+ 105 │ New_Solar_Q2           N_406         1                0             0                     8000                     0                        2                SOLR
+ 106 │ New_Wind_Q2            N_406         1                0             0                     18600                    0                        2                WND
+ 107 │ New_Solar_S3           N_507         1                0             0                     1300                     0                        2                SOLR
+ 108 │ New_Wind_S3            N_507         1                0             0                     4600                     0                        2                WND
+ 109 │ New_Wind_S10           N_509         1                0             0                     20000                    0                        2                WND
+ 110 │ New_Wind_V8            N_315         1                0             0                     20000                    0                        2                WND"
