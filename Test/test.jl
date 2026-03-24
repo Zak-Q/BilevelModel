@@ -17,17 +17,17 @@ T = 1:24 # To be 1 week of hourly data
 
 
 # For Gen in T1
-# offer price: variable cost * p + fixed cost * number of units
-offer_price = [20, 30, 25, 35, 40, 45] # $/ MWh
+# offer price: variable cost * p + (fixed cost * number of units) first part in variables, second part in objective function
+offer_price = [20, 30, 25, 35, 40, 45] # $/ MWh, solely for variable cost, generator_dict["variable_cost_$"]
 # Pmax: Maximun real power * number of units
-Pmax = [40, 80, 60, 50, 70, 90] # MW
+Pmax = [40, 80, 60, 50, 70, 90] # MW, generator_dict["maximum_real_power_MW"] * generator_dict["number_units"]
 # For Gen in T2
 # offer price: 0
 # Constant P = trace * maximum real power * number of units
 
-n_gens = 1:length(Pmax)
+n_gens = 1:length(Pmax) # should change to be generator_dict["generator_name"]
 # storages
-n_storages = [1] #socket for further developments
+n_storages = [1] # should change to be utility_storage_dict["utility_storage_name"]
 
 # Initial SOC for storage
 SOC_init = 0  # Initial state of charge, e.g., 50% of capacity
