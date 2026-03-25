@@ -6,8 +6,11 @@ Pkg.add("Gurobi")
 Pkg.add("CSV")
 Pkg.add("DataFrames")
 Pkg.add("XLSX")
+Pkg.add("QuadraticToBinary")
 using Plots, BilevelJuMP, Gurobi
 using CSV, DataFrames, JuMP, XLSX
+using QuadraticToBinary
+
 
 
 # change from hardcoded values to parameters for easier testing and further developments
@@ -18,9 +21,9 @@ T = 1:24 # To be 1 week of hourly data
 
 # For Gen in T1
 # offer price: variable cost * p + (fixed cost * number of units) first part in variables, second part in objective function
-offer_price = [20, 30, 25, 35, 40, 45] # $/ MWh, solely for variable cost, generator_dict["variable_cost_$"]
+offer_price = [20, 40, 50, 60, 65, 125] # $/ MWh, solely for variable cost, generator_dict["variable_cost_$"]
 # Pmax: Maximun real power * number of units
-Pmax = [40, 80, 60, 50, 70, 90] # MW, generator_dict["maximum_real_power_MW"] * generator_dict["number_units"]
+Pmax = [60, 50, 60, 50, 70, 90] # MW, generator_dict["maximum_real_power_MW"] * generator_dict["number_units"]
 # For Gen in T2
 # offer price: 0
 # Constant P = trace * maximum real power * number of units
@@ -34,27 +37,37 @@ SOC_init = 0  # Initial state of charge, e.g., 50% of capacity
 
 # Variable demands
 # Demand = trace * demand trace weight - Constant P
-
-Pdemand = demand_7days .- wind_7days .- solar_7days
+Pdemand = [195.0, 179.0, 168.0, 162.0, 161.0, 163.0, 170.0, 174.0, 182.0, 186.0, 187.0, 187.0, 188.0, 190.0, 193.0, 199.0, 207.0, 211.0, 210.0, 216.0, 216.0, 212.0, 208.0, 197.0]
+# Pdemand = demand_7days .- wind_7days .- solar_7days
 println("Demand profile: ", Pdemand)
 n_demands = length(Pdemand)
 
-model = BilevelModel(Gurobi.Optimizer,
-                    mode = BilevelJuMP.FortunyAmatMcCarlMode(primal_big_M = 1000, dual_big_M = 1000))
-                set_optimizer_attribute(model, "TuneTrials", 3) # Tuning of solver parameters
-                set_optimizer_attribute(model, "TuneTimeLimit", 3600) # Tuning of solver parameters
-                set_optimizer_attribute(model, "TuneOutput", 1) # Tuning of solver parameters
-                set_optimizer_attribute(model, "TuneResults", 1) # Tuning of solver parameters
+
+
+model = BilevelModel()
+set_optimizer(model,
+    ()->QuadraticToBinary.Optimizer{Float64}(Gurobi.Optimizer()))
+BilevelJuMP.set_mode(model,
+    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 10000, primal_big_M = 10000))
+set_optimizer_attribute(model, "TuneTrials", 3)
+set_optimizer_attribute(model, "TuneTimeLimit", 3600)
+set_optimizer_attribute(model, "TuneOutput", 1)
+set_optimizer_attribute(model, "TuneResults", 1)
+# model = BilevelModel(Gurobi.Optimizer, mode = BilevelJuMP.FortunyAmatMcCarlMode(big_M = 10^6))
+#                 set_optimizer_attribute(model, "TuneTrials", 3) # Tuning of solver parameters
+#                 set_optimizer_attribute(model, "TuneTimeLimit", 3600) # Tuning of solver parameters
+#                 set_optimizer_attribute(model, "TuneOutput", 1) # Tuning of solver parameters
+#                 set_optimizer_attribute(model, "TuneResults", 1) # Tuning of solver parameters
 
 @variable(Lower(model), 0 <= pwr_gen[g in n_gens, t in T] <= Pmax[g])
-@variable(Lower(model), 0 <= pwr_charge[s in n_storages, t in T])
-@variable(Lower(model), 0 <= pwr_discharge[s in n_storages, t in T])
+@variable(Lower(model), 0 <= pwr_charge[s in n_storages, t in T] <= 50)
+@variable(Lower(model), 0 <= pwr_discharge[s in n_storages, t in T] <= 40)
 
 
 @variable(Upper(model), 0 <= pwr_charge_up[s in n_storages, t in T] <= 50)
 @variable(Upper(model), 0 <= pwr_discharge_up[s in n_storages, t in T] <= 40)
-@variable(Upper(model), 0 <= price_charge[s in n_storages, t in T])
-@variable(Upper(model), 0 <= price_discharge[s in n_storages, t in T])
+@variable(Upper(model), 0 <= price_charge[s in n_storages, t in T]<= 100)
+@variable(Upper(model), 0 <= price_discharge[s in n_storages, t in T]<= 100)
 @variable(Upper(model), u_charge[s in n_storages, t in T], Bin)
 @variable(Upper(model), u_discharge[s in n_storages, t in T], Bin)
 @variable(Upper(model), 0 <= SOC[s in n_storages, t in T] <= 200)
@@ -88,7 +101,10 @@ end
 @constraint(Lower(model), discharge_limit[s in n_storages, t in T], pwr_discharge[s, t] <= pwr_discharge_up[s, t])
 
 @variable(Upper(model), Clearing_price[t in T], DualOf(balance[t]))
-
+for t in T
+    set_lower_bound(Clearing_price[t], 0.0)
+    set_upper_bound(Clearing_price[t], 200.0)  # Assuming a reasonable upper bound for the clearing price
+end
 
 
 @objective(Lower(model), Min, sum(price_discharge[s, t] * pwr_discharge[s, t] - price_charge[s, t] * pwr_charge[s, t] for s in n_storages, t in T)
@@ -114,9 +130,12 @@ df[!, :P_ch] = [sum(value(pwr_charge[s, t]) for s in n_storages) for t in T]
 df[!, :P_dis] = [sum(value(pwr_discharge[s, t]) for s in n_storages) for t in T]
 df[!, :SOC] = [sum(value(SOC[s, t]) for s in n_storages) for t in T]
 df[!, :P_thermal] = [sum(value(pwr_gen[g, t]) for g in n_gens) for t in T]
-df[!, :P_demand] = demand_7days
+df[!, :P_demand] = Pdemand
+df[!, :Clearing_price] = [value(Clearing_price[t]) for t in T]
+df[!, :price_charge] = [sum(value(price_charge[s, t]) for s in n_storages) for t in T]
+df[!, :price_discharge] = [sum(value(price_discharge[s, t]) for s in n_storages) for t in T]
 
 # println(df)
-CSV.write("result.csv", df)
+CSV.write("result01.csv", df)
 
 

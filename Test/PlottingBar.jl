@@ -9,7 +9,7 @@ Pkg.add("StatsPlots")
 using Plots, BilevelJuMP, Gurobi
 using CSV, DataFrames, JuMP, StatsPlots
 
-df = CSV.read("result.csv", DataFrame)
+df = CSV.read("G:\\github\\Reproduction of Bilevel Model\\result.csv", DataFrame)
 
 println(round.(df.P_demand))
 gr()
