@@ -9,7 +9,30 @@ Pkg.add("StatsPlots")
 using Plots, BilevelJuMP, Gurobi
 using CSV, DataFrames, JuMP, StatsPlots
 
-df = CSV.read("G:\\github\\Reproduction of Bilevel Model\\result.csv", DataFrame)
+function save_numbered_plot(fig; folder = "results", prefix = "bilevel_results", ext = "png", digits = 2)
+    output_dir = joinpath(@__DIR__, folder)
+    isdir(output_dir) || mkpath(output_dir)
+
+    pattern = Regex("^" * prefix * "(\\d+)\\." * ext)
+    max_id = 0
+
+    for file in readdir(output_dir)
+        m = match(pattern, file)
+        if m !== nothing
+            max_id = max(max_id, parse(Int, m.captures[1]))
+        end
+    end
+
+    next_id = max_id + 1
+    filename = prefix * lpad(string(next_id), digits, '0') * "." * ext
+    filepath = joinpath(output_dir, filename)
+
+    savefig(fig, filepath)
+    println("Saved plot to: ", filepath)
+    return filepath
+end
+
+df = CSV.read("G:\\github\\Test\\result01.csv", DataFrame)
 
 println(round.(df.P_demand))
 gr()
@@ -86,4 +109,4 @@ p2 = plot(
 )
 
 bilevel_plot= plot(p1, p2, layout = (2,1), size = (1300, 900))
-savefig(bilevel_plot, "bilevel_results.png")
+save_numbered_plot(bilevel_plot)

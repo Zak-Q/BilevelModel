@@ -21,9 +21,9 @@ T = 1:24 # To be 1 week of hourly data
 
 # For Gen in T1
 # offer price: variable cost * p + (fixed cost * number of units) first part in variables, second part in objective function
-offer_price = [20, 40, 50, 60, 65, 125] # $/ MWh, solely for variable cost, generator_dict["variable_cost_$"]
+offer_price = [20, 40, 50, 60, 65, 225] # $/ MWh, solely for variable cost, generator_dict["variable_cost_$"]
 # Pmax: Maximun real power * number of units
-Pmax = [60, 50, 60, 50, 70, 90] # MW, generator_dict["maximum_real_power_MW"] * generator_dict["number_units"]
+Pmax = [30, 40, 60, 50, 70, 20] # MW, generator_dict["maximum_real_power_MW"] * generator_dict["number_units"]
 # For Gen in T2
 # offer price: 0
 # Constant P = trace * maximum real power * number of units
@@ -48,7 +48,7 @@ model = BilevelModel()
 set_optimizer(model,
     ()->QuadraticToBinary.Optimizer{Float64}(Gurobi.Optimizer()))
 BilevelJuMP.set_mode(model,
-    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 10000, primal_big_M = 10000))
+    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 1000, primal_big_M = 1000))
 set_optimizer_attribute(model, "TuneTrials", 3)
 set_optimizer_attribute(model, "TuneTimeLimit", 3600)
 set_optimizer_attribute(model, "TuneOutput", 1)
@@ -60,17 +60,17 @@ set_optimizer_attribute(model, "TuneResults", 1)
 #                 set_optimizer_attribute(model, "TuneResults", 1) # Tuning of solver parameters
 
 @variable(Lower(model), 0 <= pwr_gen[g in n_gens, t in T] <= Pmax[g])
-@variable(Lower(model), 0 <= pwr_charge[s in n_storages, t in T] <= 50)
-@variable(Lower(model), 0 <= pwr_discharge[s in n_storages, t in T] <= 40)
+@variable(Lower(model), 0 <= pwr_charge[s in n_storages, t in T]<= 100) # Assuming a maximum charge power of 100 MW for simplicity
+@variable(Lower(model), 0 <= pwr_discharge[s in n_storages, t in T]<= 100) # Assuming a maximum discharge power of 100 MW for simplicity
 
 
-@variable(Upper(model), 0 <= pwr_charge_up[s in n_storages, t in T] <= 50)
-@variable(Upper(model), 0 <= pwr_discharge_up[s in n_storages, t in T] <= 40)
-@variable(Upper(model), 0 <= price_charge[s in n_storages, t in T]<= 100)
-@variable(Upper(model), 0 <= price_discharge[s in n_storages, t in T]<= 100)
+@variable(Upper(model), 0 <= pwr_charge_up[s in n_storages, t in T]<= 100) # Assuming a maximum charge power of 100 MW for simplicity
+@variable(Upper(model), 0 <= pwr_discharge_up[s in n_storages, t in T]<= 100) # Assuming a maximum discharge power of 100 MW for simplicity
+@variable(Upper(model), 0 <= price_charge[s in n_storages, t in T])
+@variable(Upper(model), 0 <= price_discharge[s in n_storages, t in T])
 @variable(Upper(model), u_charge[s in n_storages, t in T], Bin)
 @variable(Upper(model), u_discharge[s in n_storages, t in T], Bin)
-@variable(Upper(model), 0 <= SOC[s in n_storages, t in T] <= 200)
+@variable(Upper(model), 0 <= SOC[s in n_storages, t in T] <= 1000)
 
 # Initial SOC constraint
 for s in n_storages
@@ -88,8 +88,8 @@ end
 for t in T
     for s in n_storages
         @constraint(Upper(model), u_charge[s, t] + u_discharge[s, t] <= 1) #exclusion_ch_dis[s in n_storages, t in T],
-        @constraint(Upper(model), pwr_charge[s, t] <= u_charge[s, t] * pwr_charge_up[s, t]) #charge_limit[s in n_storages, t in T]
-        @constraint(Upper(model), pwr_discharge[s, t] <= u_discharge[s, t] * pwr_discharge_up[s, t]) #discharge_limit[s in n_storages, t in T], 
+        @constraint(Upper(model), pwr_charge_up[s, t] <= u_charge[s, t] .* 100) #charge_limit[s in n_storages, t in T]
+        @constraint(Upper(model), pwr_discharge_up[s, t] <= u_discharge[s, t] .* 100) #discharge_limit[s in n_storages, t in T], 
     end
 end
 
@@ -97,8 +97,8 @@ end
 @constraint(Lower(model), balance[t in T], sum(pwr_gen[g, t] for g in n_gens) + sum(pwr_discharge[s, t] for s in n_storages) 
             == Pdemand[t] + sum(pwr_charge[s, t] for s in n_storages))
 
-@constraint(Lower(model), charge_limit[s in n_storages, t in T], pwr_charge[s, t] <= pwr_charge_up[s, t])
-@constraint(Lower(model), discharge_limit[s in n_storages, t in T], pwr_discharge[s, t] <= pwr_discharge_up[s, t])
+@constraint(Lower(model), charge_limit[s in n_storages, t in T], pwr_charge[s, t] - pwr_charge_up[s, t] <= 0)
+@constraint(Lower(model), discharge_limit[s in n_storages, t in T], pwr_discharge[s, t] - pwr_discharge_up[s, t] <= 0)
 
 @variable(Upper(model), Clearing_price[t in T], DualOf(balance[t]))
 for t in T
@@ -108,11 +108,11 @@ end
 
 
 @objective(Lower(model), Min, sum(price_discharge[s, t] * pwr_discharge[s, t] - price_charge[s, t] * pwr_charge[s, t] for s in n_storages, t in T)
-                            +sum(offer_price[g] * pwr_gen[g, t] for g in n_gens, t in T))
+                            + sum(offer_price[g] * pwr_gen[g, t] for g in n_gens, t in T))
 
 
-@objective(Upper(model), Max, sum((Clearing_price[t] + price_charge[s, t]) * pwr_charge[s, t] for t in T, s in n_storages) 
-                            - sum((Clearing_price[t] + price_discharge[s, t]) * pwr_discharge[s, t] for t in T, s in n_storages))
+@objective(Upper(model), Max, sum((Clearing_price[t] - 2) * pwr_discharge[s, t] for t in T, s in n_storages)
+                             - sum((Clearing_price[t] + 5) * pwr_charge[s, t] for t in T, s in n_storages))
 
 # solve the bilevel model
 optimize!(model)
@@ -136,6 +136,6 @@ df[!, :price_charge] = [sum(value(price_charge[s, t]) for s in n_storages) for t
 df[!, :price_discharge] = [sum(value(price_discharge[s, t]) for s in n_storages) for t in T]
 
 # println(df)
-CSV.write("result01.csv", df)
+CSV.write("result02.csv", df)
 
 

@@ -128,6 +128,8 @@ for i in 1:nrow(Model_data["Utility Storage Data"])
         "Minimum_Storage_Capacity_MWh" => Model_data["Utility Storage Data"][!, "Minimum Storage Capacity (MWh)"][i],
         "Maximum_Charge_Rate_MWh" => Model_data["Utility Storage Data"][!, "Maximum Charge Rate (MW/h)"][i], # Assuming this is charge power
         "Maximum_Discharge_Rate_MWh" => Model_data["Utility Storage Data"][!, "Maximum Discharge Rate (MW/h)"][i], # Assuming this is discharge power
+        "Marginal_Cost_Charge" => Model_data["Utility Storage Data"][!, "Marginal Cost Charge (\$/MWh)"][i],
+        "Marginal_Cost_Discharge" => Model_data["Utility Storage Data"][!, "Marginal Cost Discharge (\$/MWh)"][i]
     )
 
     # Check for efficiency columns
@@ -256,7 +258,8 @@ end
 
 # Trace data loading function
 function get_7days_dataframe(file_path::String)
-    df = CSV.read(file_path, DataFrame)
+    df = 
+    read(file_path, DataFrame)
     # Use tryparse to skip invalid dates (e.g. Feb 29 in non-leap years)
     df.Date = [tryparse(Date, string(r.Year, "-", lpad(r.Month, 2, '0'), "-", lpad(r.Day, 2, '0'))) for r in eachrow(df)]
     filter!(row -> !isnothing(row.Date), df)
