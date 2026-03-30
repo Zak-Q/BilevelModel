@@ -36,7 +36,12 @@ SOC_init = 0  # Initial state of charge, e.g., 50% of capacity
 
 # Variable demands
 # Demand = trace * demand trace weight - Constant P
-Pdemand = [195.0, 179.0, 168.0, 162.0, 161.0, 163.0, 170.0, 174.0, 182.0, 186.0, 187.0, 187.0, 188.0, 190.0, 193.0, 199.0, 207.0, 211.0, 210.0, 216.0, 216.0, 212.0, 208.0, 197.0]
+Pdemand = [
+    80, 75, 70, 70, 75, 90,
+    110, 130, 150, 170, 180, 190,
+    200, 210, 220, 230, 240, 250,
+    260, 250, 220, 180, 140, 100
+]
 # Pdemand = demand_7days .- wind_7days .- solar_7days
 println("Demand profile: ", Pdemand)
 n_demands = length(Pdemand)
@@ -44,14 +49,25 @@ n_demands = length(Pdemand)
 
 
 model = BilevelModel()
-set_optimizer(model,
-    ()->QuadraticToBinary.Optimizer{Float64}(Gurobi.Optimizer()))
-BilevelJuMP.set_mode(model,
-    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 300, primal_big_M = 300))
-set_optimizer_attribute(model, "TuneTrials", 3)
-set_optimizer_attribute(model, "TuneTimeLimit", 3600)
-set_optimizer_attribute(model, "TuneOutput", 1)
-set_optimizer_attribute(model, "TuneResults", 1)
+
+set_optimizer(model, Gurobi.Optimizer)
+
+# 仍然使用 Fortuny-Amat + Big-M
+BilevelJuMP.set_mode(
+    model,
+    BilevelJuMP.FortunyAmatMcCarlMode(
+        dual_big_M = 250.0,
+        primal_big_M = 150.0
+    )
+)
+
+# 关键：允许非凸二次项
+set_optimizer_attribute(model, "NonConvex", 2)
+
+# 可选调参
+set_optimizer_attribute(model, "OutputFlag", 1)
+set_optimizer_attribute(model, "MIPGap", 1e-4)
+set_optimizer_attribute(model, "TimeLimit", 600)
 # model = BilevelModel(Gurobi.Optimizer, mode = BilevelJuMP.FortunyAmatMcCarlMode(big_M = 10^6))
 #                 set_optimizer_attribute(model, "TuneTrials", 3) # Tuning of solver parameters
 #                 set_optimizer_attribute(model, "TuneTimeLimit", 3600) # Tuning of solver parameters
@@ -82,7 +98,7 @@ for t in T[2:end]
         @constraint(Upper(model), SOC[s, t] == SOC[s, t-1] + pwr_charge[s, t] - pwr_discharge[s, t])
     end
 end
-
+# @constraint(Upper(model), sum(pwr_discharge[s,t] for s in n_storages, t in T) >= 20) # tuning
 # Other constraints
 for t in T
     for s in n_storages
@@ -128,7 +144,10 @@ df = DataFrame(Time = collect(T))
 df[!, :P_ch] = [sum(value(pwr_charge[s, t]) for s in n_storages) for t in T]
 df[!, :P_dis] = [sum(value(pwr_discharge[s, t]) for s in n_storages) for t in T]
 df[!, :SOC] = [sum(value(SOC[s, t]) for s in n_storages) for t in T]
-df[!, :P_thermal] = [sum(value(pwr_gen[g, t]) for g in n_gens) for t in T]
+for g in n_gens
+    col_name = Symbol("P_thermal_", g)
+    df[!, col_name] = [value(pwr_gen[g, t]) for t in T]
+end
 df[!, :P_demand] = Pdemand
 df[!, :Clearing_price] = [value(Clearing_price[t]) for t in T]
 df[!, :price_charge] = [sum(value(price_charge[s, t]) for s in n_storages) for t in T]

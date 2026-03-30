@@ -32,7 +32,7 @@ function save_numbered_plot(fig; folder = "results", prefix = "bilevel_results",
     return filepath
 end
 
-df = CSV.read("G:\\github\\Test\\result01.csv", DataFrame)
+df = CSV.read("G:\\github\\Test\\result02.csv", DataFrame)
 
 println(round.(df.P_demand))
 gr()
@@ -45,11 +45,11 @@ x = df.Time
 # tech_labels = ["BlackCoal" "BrownCoal" "Hydro" "Wind" "UtilitySolar" "UtilityStorage" "Gas" "UnservedDemand"]
 # tech_colors = [:black :brown :navy :MediumSpringGreen :DarkOrange :purple :Salmon :gray]
 
-tech_data =[df.P_thermal df.P_dis]
+tech_data =[df.P_thermal_1 df.P_thermal_2 df.P_thermal_3 df.P_thermal_4 df.P_thermal_5 df.P_thermal_6 df.P_dis]
 # hcat(p_bess_net, df.P_thermal)
 
 # 标签
-tech_labels = ["P_thermal" "P_dis"]
+tech_labels = ["P_thermal_1" "P_thermal_2" "P_thermal_3" "P_thermal_4" "P_thermal_5" "P_thermal_6" "P_dis"]
 p_ch_neg = .-df.P_ch
 p_demand = df.P_demand
 soc = df.SOC
@@ -61,7 +61,7 @@ p1 = groupedbar(
     bar_width = 1.0,
     bar_position = :stack,
     label = tech_labels,
-    color = [:orange :green],
+    color = [:orange :green :red :blue :yellow :cyan :magenta :purple],
     linecolor = :transparent,
     xlabel = "Hours",
     ylabel = "Power (MW)",
