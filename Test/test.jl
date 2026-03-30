@@ -6,10 +6,9 @@ Pkg.add("Gurobi")
 Pkg.add("CSV")
 Pkg.add("DataFrames")
 Pkg.add("XLSX")
-Pkg.add("QuadraticToBinary")
+
 using Plots, BilevelJuMP, Gurobi
 using CSV, DataFrames, JuMP, XLSX
-using QuadraticToBinary
 
 
 

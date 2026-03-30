@@ -72,7 +72,7 @@ function main()
     set_optimizer_attribute(model, "Threads", 0)
 
     #-------------------Upper-level decision variables-------------------#
-    @variable(model, 0 <= p_dis_up[s in n_storages, t in T] <= )
+    @variable(model, 0 <= p_dis_up[s in n_storages, t in T] <= 100)
 
     @variable(model, 0 <= p[g in data.G, t in data.T] <= data.pmax[g])
     @variable(model, shed[t in data.T] >= 0)  # 负荷切除(高罚值)
