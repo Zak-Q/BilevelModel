@@ -48,7 +48,7 @@ model = BilevelModel()
 set_optimizer(model,
     ()->QuadraticToBinary.Optimizer{Float64}(Gurobi.Optimizer()))
 BilevelJuMP.set_mode(model,
-    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 1000, primal_big_M = 1000))
+    BilevelJuMP.FortunyAmatMcCarlMode(dual_big_M = 300, primal_big_M = 300))
 set_optimizer_attribute(model, "TuneTrials", 3)
 set_optimizer_attribute(model, "TuneTimeLimit", 3600)
 set_optimizer_attribute(model, "TuneOutput", 1)
@@ -103,7 +103,7 @@ end
 @variable(Upper(model), Clearing_price[t in T], DualOf(balance[t]))
 for t in T
     set_lower_bound(Clearing_price[t], 0.0)
-    set_upper_bound(Clearing_price[t], 200.0)  # Assuming a reasonable upper bound for the clearing price
+    set_upper_bound(Clearing_price[t], 230.0)  # Assuming a reasonable upper bound for the clearing price
 end
 
 
